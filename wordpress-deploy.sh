@@ -35,7 +35,7 @@ do
 	if dpkg -s $package >/dev/null >/dev/null 2>&1; then
 		echo -e "${green}$package${nc} is installed"
 	else
-		if [$package="mysql-server"]; then
+		if [$package=="mysql-server"]; then
 			database_root_pass=$(openssl rand -base64 14)
 			debconf-set-selections <<< "mysql-server mysql-server/root_password password $database_root_pass"
 			debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $database_root_pass"
@@ -90,7 +90,7 @@ ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/
 
 #5 - download WordPress (we will move it to /var/www/$domain below 7 because I want to finish the wp-config.php setup
 curl -O https://wordpress.org/latest.tar.gz
-tar xzvf latest.tar.gz
+tar -xzf latest.tar.gz
 rm latest.tar.gz
 
 # 6 Create a new mysql database for new WordPress. (database name “example.com_db” )
@@ -110,6 +110,9 @@ sed -i -e "s/database_name_here/${database_name}/g" wordpress/wp-config.php
 sed -i -e "s/username_here/${database_user}/g" wordpress/wp-config.php
 sed -i -e "s/password_here/${database_pass}/g" wordpress/wp-config.php
 #	might as well update the salts
+wordpress_salts=$(curl -s https://api.wordpress.org/secret-key/1.1/salt/)
+sed -e "/AUTH_KEY/,/NONCE_SALT/c\{$wordpress_salts}" wordpress/wp-config.php
+
 
 # 	now move wordpress/ to /var/www/$domain
 mv wordpress/ /var/www/$domain
