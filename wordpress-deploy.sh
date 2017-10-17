@@ -1,6 +1,7 @@
 #!/bin/bash
 clear
 
+# Got the idea to build this after running accros it mentioned on rtcamp.com the rules follow:
 # 1 Your script will check if PHP, Mysql & Nginx are installed. If not present, missing packages will be installed.
 # 2 The script will then ask user for domain name. (Suppose user enters example.com)
 # 3 Create a /etc/hosts entry for example.com pointing to localhost IP.
